@@ -7,12 +7,14 @@ using Random = UnityEngine.Random;
 
 public class BallController : MonoBehaviour
 {
-    [FormerlySerializedAs("Velocity")] public float speed = 1f;
-
+    private const float BaseSpeed = 6f, SpeedStep = 1.35f;
     private int _leftScore = 0, _rightScore = 0;
     private PaddleController _leftPaddle, _rightPaddle;
     private Rigidbody _rigidbody;
 
+    [FormerlySerializedAs("Velocity")] public float speed = BaseSpeed;
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -33,49 +35,53 @@ public class BallController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "Left")
+        switch (collision.gameObject.name)
         {
-            _leftScore++;
-            Debug.Log($"Left player scored.\nScore: Left: {_leftScore} | Right: {_rightScore}");
+            case "Left":
+            {
+                _leftScore++;
+                Debug.Log($"Left player scored.\nScore: Left: {_leftScore} | Right: {_rightScore}");
 
-            if (_leftScore == 11)
-            {
-                Debug.Log("Left Player Wins!");
-                ResetGame();
+                if (_leftScore == 11)
+                {
+                    Debug.Log("Left Player Wins!");
+                    ResetGame();
+                }
+                else
+                {
+                    OnScore(-1);
+                }
+
+                break;
             }
-            else
+            case "Right":
             {
-                OnScore();
+                _rightScore++;
+                Debug.Log($"Right player scored.\nScore: Left: {_leftScore} | Right: {_rightScore}");
+
+                if (_rightScore == 11)
+                {
+                    Debug.Log("Right Player Wins!");
+                    ResetGame();
+                }
+                else
+                {
+                    OnScore(1);
+                }
+
+                break;
             }
+            case "Left Paddle" or "Right Paddle":
+                _rigidbody.velocity *= SpeedStep;
+                break;
         }
-        else if (collision.gameObject.name == "Right")
-        {
-            _rightScore++;
-            Debug.Log($"Right player scored.\nScore: Left: {_leftScore} | Right: {_rightScore}");
-
-            if (_rightScore == 11)
-            {
-                Debug.Log("Right Player Wins!");
-                ResetGame();
-            }
-            else
-            {
-                OnScore();
-            }
-        }
-        else if (collision.gameObject.name is "Left Paddle" or "Right Paddle")
-        {
-            _rigidbody.velocity *= 2f;
-        }
-
-}
+    }
 
 
-    private void OnScore()
+    private void OnScore(float vx)
     {
         transform.position = Vector3.zero;
         
-        float vx = Random.Range(0, 2) < 1 ? 1 : -1;
         float vz = Random.Range(0, 2) < 1 ? 1 : -1;
 
         _rigidbody.velocity = new Vector3(speed * vx, 0f, speed * vz);
@@ -86,7 +92,7 @@ public class BallController : MonoBehaviour
 
     private void ResetGame()
     {
-        OnScore();
+        OnScore(Random.Range(0, 2) < 1 ? 1 : -1);
         _leftScore = _rightScore = 0;
     }
 }
