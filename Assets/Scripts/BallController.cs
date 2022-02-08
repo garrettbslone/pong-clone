@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 public class BallController : MonoBehaviour
 {
-    private const float BaseSpeed = 6f, SpeedStep = 1.35f;
+    private const float BaseSpeed = 4f, SpeedStep = 1.55f;
     private int _leftScore = 0, _rightScore = 0;
     private PaddleController _leftPaddle, _rightPaddle;
     private Rigidbody _rigidbody;

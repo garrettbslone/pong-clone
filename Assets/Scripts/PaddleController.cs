@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 public class PaddleController : MonoBehaviour
 {
     [FormerlySerializedAs("IsLeftBumper")] public bool isLeftBumper = true;
-    [FormerlySerializedAs("MovementSpeed")] public float movementSpeed = 2f;
+    [FormerlySerializedAs("MovementSpeed")] public float movementSpeed = 3f;
     // Start is called before the first frame update
     void Start()
     {
