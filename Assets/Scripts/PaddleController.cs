@@ -8,10 +8,14 @@ public class PaddleController : MonoBehaviour
 {
     [FormerlySerializedAs("IsLeftBumper")] public bool isLeftBumper = true;
     [FormerlySerializedAs("MovementSpeed")] public float movementSpeed = 3f;
+
+    public AudioClip hitSound;
+    
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (hitSound)
+            hitSound.LoadAudioData();
     }
 
     // Update is called once per frame

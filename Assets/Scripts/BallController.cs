@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -11,6 +12,7 @@ public class BallController : MonoBehaviour
     private int _leftScore = 0, _rightScore = 0;
     private PaddleController _leftPaddle, _rightPaddle;
     private Rigidbody _rigidbody;
+    private AudioSource _audio;
 
     [FormerlySerializedAs("Velocity")] public float speed = BaseSpeed;
 
@@ -26,6 +28,8 @@ public class BallController : MonoBehaviour
         float vz = Random.Range(0, 2) < 1 ? 1 : -1;
 
         _rigidbody.velocity = new Vector3(speed * vx, 0f, speed * vz);
+
+        _audio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -72,8 +76,12 @@ public class BallController : MonoBehaviour
                 break;
             }
             case "Left Paddle" or "Right Paddle":
+            {
+                _audio.clip = transform.position.x > 0 ? _leftPaddle.hitSound : _rightPaddle.hitSound;
+                _audio.Play();
                 _rigidbody.velocity *= SpeedStep;
                 break;
+            }
         }
     }
 
