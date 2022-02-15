@@ -5,14 +5,16 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+using TMPro;
 
-public class BallController : MonoBehaviour
+public class GameplayManager : MonoBehaviour
 {
     private const float BaseSpeed = 4f, SpeedStep = 1.55f;
     private int _leftScore = 0, _rightScore = 0;
     private PaddleController _leftPaddle, _rightPaddle;
     private Rigidbody _rigidbody;
     private AudioSource _audio;
+    private TMP_Text _leftScoreTxt, _rightScoreTxt;
 
     [FormerlySerializedAs("Velocity")] public float speed = BaseSpeed;
 
@@ -30,6 +32,9 @@ public class BallController : MonoBehaviour
         _rigidbody.velocity = new Vector3(speed * vx, 0f, speed * vz);
 
         _audio = GetComponent<AudioSource>();
+
+        _leftScoreTxt = GameObject.Find("LeftScoreText").GetComponent<TMP_Text>();
+        _rightScoreTxt = GameObject.Find("RightScoreText").GetComponent<TMP_Text>();
     }
 
     // Update is called once per frame
@@ -37,14 +42,38 @@ public class BallController : MonoBehaviour
     {
     }
 
+    private void setHitSound()
+    {
+        
+        PaddleController p = transform.position.x > 0 ? _leftPaddle : _rightPaddle;
+        _audio.clip = (_rigidbody.velocity.x + _rigidbody.velocity.y) / 2 > 5f ? p.hitSound : p.hitSoundSlow;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         switch (collision.gameObject.name)
         {
-            case "Left":
+            case "Right":
             {
                 _leftScore++;
                 Debug.Log($"Left player scored.\nScore: Left: {_leftScore} | Right: {_rightScore}");
+                _leftScoreTxt.text = $"{_leftScore}";
+
+                if (_leftScore > _rightScore)
+                {
+                    _leftScoreTxt.color = Color.green;
+                    _rightScoreTxt.color = Color.red;
+                } 
+                else if (_leftScore < _rightScore)
+                {
+                    _leftScoreTxt.color = Color.red;
+                    _rightScoreTxt.color = Color.green;
+                }
+                else
+                {
+                    _leftScoreTxt.color = Color.white;
+                    _rightScoreTxt.color = Color.white;
+                }
 
                 if (_leftScore == 11)
                 {
@@ -58,11 +87,28 @@ public class BallController : MonoBehaviour
 
                 break;
             }
-            case "Right":
+            case "Left":
             {
                 _rightScore++;
                 Debug.Log($"Right player scored.\nScore: Left: {_leftScore} | Right: {_rightScore}");
+                _rightScoreTxt.text = $"{_rightScore}";
 
+                if (_leftScore > _rightScore)
+                {
+                    _leftScoreTxt.color = Color.green;
+                    _rightScoreTxt.color = Color.red;
+                } 
+                else if (_leftScore < _rightScore)
+                {
+                    _leftScoreTxt.color = Color.red;
+                    _rightScoreTxt.color = Color.green;
+                }
+                else
+                {
+                    _leftScoreTxt.color = Color.white;
+                    _rightScoreTxt.color = Color.white;
+                }
+                
                 if (_rightScore == 11)
                 {
                     Debug.Log("Right Player Wins!");
@@ -77,7 +123,7 @@ public class BallController : MonoBehaviour
             }
             case "Left Paddle" or "Right Paddle":
             {
-                _audio.clip = transform.position.x > 0 ? _leftPaddle.hitSound : _rightPaddle.hitSound;
+                setHitSound();
                 _audio.Play();
                 _rigidbody.velocity *= SpeedStep;
                 break;
