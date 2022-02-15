@@ -29,4 +29,9 @@ public class PowerupController : MonoBehaviour
             _rigidbody.velocity *= -1;
         }
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.gameObject.name);
+    }
 }

@@ -42,7 +42,7 @@ public class GameplayManager : MonoBehaviour
     {
         if (transform.localScale.x > 1)
         {
-            this.transform.localScale -= new Vector3(0.25f * Time.deltaTime, 0.25f * Time.deltaTime, 0.25f * Time.deltaTime);
+            this.transform.localScale -= new Vector3(0.55f * Time.deltaTime, 0.55f * Time.deltaTime, 0.55f * Time.deltaTime);
         }
 
         if (_leftBlackoutTime > 0)
@@ -150,30 +150,38 @@ public class GameplayManager : MonoBehaviour
                 _rigidbody.velocity *= SpeedStep;
                 break;
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        switch (other.gameObject.name)
+        {
             case "GrowPowerup":
             {
-                transform.localScale *= 4;
+                transform.localScale = new Vector3(4f, 4f, 4f);
                 break;
             }
             case "BlackoutPowerup":
             {
                 if (_rigidbody.velocity.x > 0)
                 {
-                    _rightPaddle.GetComponent<Material>().color = Color.black;
+                    _rightPaddle.GetComponent<Renderer>().material.color = Color.black;
                 }
                 else
                 {
-                    _leftPaddle.GetComponent<Material>().color = Color.black;
+                    _leftPaddle.GetComponent<Renderer>().material.color = Color.black;
                 }
+
                 break;
             }
         }
     }
 
-
     private void OnScore(float vx)
     {
         transform.position = Vector3.zero;
+        transform.localScale = new Vector3(1f, 1f, 1f);
         
         float vz = Random.Range(0, 2) < 1 ? 1 : -1;
 

@@ -26,14 +26,10 @@ public class PaddleController : MonoBehaviour
         float displacement = isLeftBumper ? Input.GetAxis("VerticalLeft") : Input.GetAxis("VerticalRight");
         this.transform.Translate(0f, 0f, displacement * 2f * movementSpeed * Time.deltaTime);   
     }
-
-    private void FixedUpdate()
-    {
-    }
-
     public void ResetPaddle()
     {
         Vector3 pos = transform.position;
         transform.position = new Vector3(pos.x, pos.y, 0f);
+        GetComponent<Renderer>().material.color = Color.gray;
     }
 }
