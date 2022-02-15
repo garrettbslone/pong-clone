@@ -15,10 +15,10 @@ public class GameplayManager : MonoBehaviour
     private Rigidbody _rigidbody;
     private AudioSource _audio;
     private TMP_Text _leftScoreTxt, _rightScoreTxt;
+    private float _leftBlackoutTime = 0f, _rightBlackoutTime = 0f;
 
     [FormerlySerializedAs("Velocity")] public float speed = BaseSpeed;
 
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +40,28 @@ public class GameplayManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (transform.localScale.x > 1)
+        {
+            this.transform.localScale -= new Vector3(0.25f * Time.deltaTime, 0.25f * Time.deltaTime, 0.25f * Time.deltaTime);
+        }
+
+        if (_leftBlackoutTime > 0)
+        {
+            _leftBlackoutTime -= 0.1f;
+        }
+        else
+        {
+            _leftPaddle.GetComponent<Renderer>().material.color = Color.gray;
+        }
+        
+        if (_rightBlackoutTime > 0)
+        {
+            _rightBlackoutTime -= 0.1f;
+        }
+        else
+        {
+            _rightPaddle.GetComponent<Renderer>().material.color = Color.gray;
+        }
     }
 
     private void setHitSound()
@@ -82,7 +104,7 @@ public class GameplayManager : MonoBehaviour
                 }
                 else
                 {
-                    OnScore(-1);
+                    OnScore(1);
                 }
 
                 break;
@@ -116,7 +138,7 @@ public class GameplayManager : MonoBehaviour
                 }
                 else
                 {
-                    OnScore(1);
+                    OnScore(-1);
                 }
 
                 break;
@@ -126,6 +148,23 @@ public class GameplayManager : MonoBehaviour
                 setHitSound();
                 _audio.Play();
                 _rigidbody.velocity *= SpeedStep;
+                break;
+            }
+            case "GrowPowerup":
+            {
+                transform.localScale *= 4;
+                break;
+            }
+            case "BlackoutPowerup":
+            {
+                if (_rigidbody.velocity.x > 0)
+                {
+                    _rightPaddle.GetComponent<Material>().color = Color.black;
+                }
+                else
+                {
+                    _leftPaddle.GetComponent<Material>().color = Color.black;
+                }
                 break;
             }
         }
